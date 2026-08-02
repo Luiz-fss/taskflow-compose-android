@@ -8,6 +8,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.taskflow.ui.components.TaskItem
@@ -16,9 +19,13 @@ import com.example.taskflow.viewmodel.TaskViewModel
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    taskViewModel: TaskViewModel = viewModel()
+    taskViewModel: TaskViewModel
 ) {
     val taskList by taskViewModel.tasks.collectAsState()
+    var newTaskTitle by remember {
+        mutableStateOf("")
+    }
+
     Column(
         modifier = modifier.fillMaxSize()
     ) {
