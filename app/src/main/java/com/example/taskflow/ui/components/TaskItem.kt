@@ -11,14 +11,17 @@ import com.example.taskflow.model.Task
 
 @Composable
 fun TaskItem(
-    task: Task
+    task: Task,
+    onTaskChecked: () -> Unit
 ) {
     Row(
         modifier = Modifier.padding(16.dp)
     ) {
         Checkbox(
             checked = task.completed,
-            onCheckedChange = {}
+            onCheckedChange = {
+                    onTaskChecked()
+            }
         )
         Text(
             text = task.title,
