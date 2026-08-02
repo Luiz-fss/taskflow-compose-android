@@ -34,4 +34,36 @@ class TaskViewModel: ViewModel() {
             }
         }
     }
+
+    fun addTask(title: String){
+        val newTask = Task(
+            id = _tasks.value.size + 1,
+            title = title,
+            completed = false
+        )
+
+        _tasks.value = _tasks.value + newTask
+    }
+
+    fun deleteTask(id: Int) {
+        _tasks.value = _tasks.value.filter { task ->
+            task.id != id
+        }
+
+    }
+
+    fun updateTask(
+        id: Int,
+        title: String
+    ) {
+        _tasks.value = _tasks.value.map { task ->
+            if(task.id == id){
+                task.copy(
+                    title = title
+                )
+            } else {
+                task
+            }
+        }
+    }
 }
