@@ -23,6 +23,12 @@ class TaskViewModel: ViewModel() {
 
     val tasks = _tasks.asStateFlow()
 
+    fun getTaskById(id: Int): Task? {
+        return _tasks.value.find { task ->
+            task.id == id
+        }
+    }
+
     fun toggleTask(id: Int) {
         _tasks.value = _tasks.value.map { task ->
             if (task.id == id) {
@@ -66,4 +72,5 @@ class TaskViewModel: ViewModel() {
             }
         }
     }
+
 }

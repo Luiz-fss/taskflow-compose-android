@@ -1,45 +1,89 @@
 package com.example.taskflow.navigation
+
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.taskflow.ui.screens.AddTaskScreen
+import com.example.taskflow.ui.screens.EditTaskScreen
 import com.example.taskflow.ui.screens.HomeScreen
 import com.example.taskflow.viewmodel.TaskViewModel
 
-//desenha a estrutura de navegação
 @Composable
 fun TaskNavigation() {
 
-    //controle de navegação, sabe a tela atual,qual tela devo ir e voltar
     val navController = rememberNavController()
 
-    //pegando a viewmodel2
     val taskViewModel: TaskViewModel = viewModel()
 
     NavHost(
-        //NavHost usa esse navegador aqui
         navController = navController,
-        //Tela inicial quando o app abrir. Pode ser colocado condicional caso precise
         startDestination = Screen.Home.route
     ) {
 
-        //cadastrando uma tela
         composable(
             route = Screen.Home.route
         ) {
-            //Tela que será criada
+
             HomeScreen(
                 taskViewModel = taskViewModel,
+
                 onAddClick = {
                     navController.navigate(Screen.Add.route)
+                },
+
+                onEditClick = { taskId ->
+
+                    navController.navigate(
+                        Screen.Edit.route.replace(
+                            "{taskId}",
+                            taskId.toString()
+                        )
+                    )
+
                 }
             )
         }
-        composable(Screen.Add.route) {
+
+
+        composable(
+            route = Screen.Add.route
+        ) {
+
             AddTaskScreen(
-                taskViewModel = taskViewModel
+                taskViewModel = taskViewModel,
+
+                onTaskSaved = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+
+        composable(
+            route = Screen.Edit.route,
+            arguments = listOf(
+                navArgument("taskId") {
+                    type = NavType.IntType
+                }
+            )
+        ) { backStackEntry ->
+
+            val taskId = backStackEntry
+                .arguments
+                ?.getInt("taskId") ?: 0
+
+
+            EditTaskScreen(
+                taskId = taskId,
+                taskViewModel = taskViewModel,
+
+                onTaskUpdated = {
+                    navController.popBackStack()
+                }
             )
         }
     }

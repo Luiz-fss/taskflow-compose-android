@@ -16,13 +16,16 @@ import androidx.compose.ui.unit.dp
 import com.example.taskflow.viewmodel.TaskViewModel
 
 @Composable
-fun AddTaskScreen(
+fun EditTaskScreen(
+    taskId: Int,
     taskViewModel: TaskViewModel,
-    onTaskSaved: () -> Unit
+    onTaskUpdated: () -> Unit
 ) {
 
-    var title by remember {
-        mutableStateOf("")
+    val task = taskViewModel.getTaskById(taskId)
+
+    var title by remember(task) {
+        mutableStateOf(task?.title ?: "")
     }
 
     Column(
@@ -32,7 +35,7 @@ fun AddTaskScreen(
     ) {
 
         Text(
-            text = "Nova tarefa"
+            text = "Editar tarefa"
         )
 
         TextField(
@@ -47,8 +50,12 @@ fun AddTaskScreen(
 
         Button(
             onClick = {
-                taskViewModel.addTask(title)
-                onTaskSaved()
+                taskViewModel.updateTask(
+                    id = taskId,
+                    title = title
+                )
+
+                onTaskUpdated()
             }
         ) {
             Text("Salvar")
