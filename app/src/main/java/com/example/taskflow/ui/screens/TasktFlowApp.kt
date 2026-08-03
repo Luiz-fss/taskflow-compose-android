@@ -42,7 +42,7 @@ fun TaskFlowApp() {
             },
             onConfirm = {tittle ->
                 taskViewModel.addTask(tittle)
-                showAddTaskDialog = true
+                showAddTaskDialog = false
             }
         )
 

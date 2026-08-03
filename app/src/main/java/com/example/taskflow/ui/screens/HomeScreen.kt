@@ -12,7 +12,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.taskflow.model.Task
+import com.example.taskflow.ui.components.DeleteTaskDialog
+import com.example.taskflow.ui.components.EditTaskDialog
+import com.example.taskflow.ui.components.EmptyTaskState
 import com.example.taskflow.ui.components.TaskItem
 import com.example.taskflow.viewmodel.TaskViewModel
 
@@ -22,25 +25,78 @@ fun HomeScreen(
     taskViewModel: TaskViewModel
 ) {
     val taskList by taskViewModel.tasks.collectAsState()
-    var newTaskTitle by remember {
-        mutableStateOf("")
+
+    var taskToDelete by remember {
+        mutableStateOf<Task?>(null)
+    }
+
+    var taskToEdit by remember {
+        mutableStateOf<Task?>(null)
     }
 
     Column(
         modifier = modifier.fillMaxSize()
     ) {
         Text(
-            text = "Minhas tarefas"
+            text = "Minhas tarefas",
+
         )
-        LazyColumn {
-            items(taskList) { task ->
-                TaskItem(
-                    task = task,
-                    onTaskChecked = {
-                        taskViewModel.toggleTask(task.id)
-                    }
-                )
+
+        if(taskList.isEmpty()){
+            EmptyTaskState()
+        }else{
+            LazyColumn {
+                items(taskList) { task ->
+
+                    TaskItem(
+                        task = task,
+
+                        onTaskChecked = {
+                            taskViewModel.toggleTask(task.id)
+                        },
+
+                        onDelete = {
+                            taskToDelete = task
+                        },
+
+                        onEdit = {
+                           taskToEdit = task
+                        }
+                    )
+                }
             }
+
+        }
+
+        if (taskToDelete != null) {
+            DeleteTaskDialog(
+                onDismiss = {
+                    taskToDelete = null
+                },
+                onConfirm = {
+                    taskViewModel.deleteTask(taskToDelete!!.id)
+                    taskToDelete = null
+                }
+            )
+        }
+
+        if (taskToEdit != null) {
+            EditTaskDialog(
+                task = taskToEdit!!,
+
+                onDismiss = {
+                    taskToEdit = null
+                },
+
+                onConfirm = { newTitle ->
+                    taskViewModel.updateTask(
+                        id = taskToEdit!!.id,
+                        title = newTitle
+                    )
+
+                    taskToEdit = null
+                }
+            )
         }
     }
 }
