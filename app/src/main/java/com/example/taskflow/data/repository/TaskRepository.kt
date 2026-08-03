@@ -49,4 +49,17 @@ class TaskRepository(
         )
 
     }
+
+
+    // Busca uma tarefa específica pelo ID
+    //
+    // O DAO retorna uma TaskEntity (modelo do banco)
+    // e aqui convertemos para Task (modelo da aplicação)
+    suspend fun getTaskById(id: Int): Task? {
+
+        return taskDao.getTaskById(id)
+            ?.toTask()
+
+    }
+
 }
