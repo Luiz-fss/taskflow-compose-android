@@ -2,8 +2,11 @@ package com.example.taskflow.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -12,17 +15,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.example.taskflow.model.Task
-import com.example.taskflow.ui.components.DeleteTaskDialog
-import com.example.taskflow.ui.components.EditTaskDialog
-import com.example.taskflow.ui.components.EmptyTaskState
+import com.example.taskflow.ui.components.AddTaskDialog
 import com.example.taskflow.ui.components.TaskItem
 import com.example.taskflow.viewmodel.TaskViewModel
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    taskViewModel: TaskViewModel
+    taskViewModel: TaskViewModel,
+    onAddClick: () -> Unit
 ) {
     val taskList by taskViewModel.tasks.collectAsState()
 
@@ -30,21 +33,31 @@ fun HomeScreen(
         mutableStateOf<Task?>(null)
     }
 
-    var taskToEdit by remember {
-        mutableStateOf<Task?>(null)
+    var showAddTaskDialog by remember {
+        mutableStateOf(false)
     }
 
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        Text(
-            text = "Minhas tarefas",
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    onAddClick()
+                }
+            ) {
+                Text(text = "+")
+            }
+        }
+    ) { innerPadding ->
 
-        )
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Text(
+                text = "Minhas tarefas"
+            )
 
-        if(taskList.isEmpty()){
-            EmptyTaskState()
-        }else{
             LazyColumn {
                 items(taskList) { task ->
 
@@ -60,43 +73,23 @@ fun HomeScreen(
                         },
 
                         onEdit = {
-                           taskToEdit = task
+                            // por enquanto nada
                         }
                     )
                 }
             }
-
         }
+    }
 
-        if (taskToDelete != null) {
-            DeleteTaskDialog(
-                onDismiss = {
-                    taskToDelete = null
-                },
-                onConfirm = {
-                    taskViewModel.deleteTask(taskToDelete!!.id)
-                    taskToDelete = null
-                }
-            )
-        }
-
-        if (taskToEdit != null) {
-            EditTaskDialog(
-                task = taskToEdit!!,
-
-                onDismiss = {
-                    taskToEdit = null
-                },
-
-                onConfirm = { newTitle ->
-                    taskViewModel.updateTask(
-                        id = taskToEdit!!.id,
-                        title = newTitle
-                    )
-
-                    taskToEdit = null
-                }
-            )
-        }
+    if (showAddTaskDialog) {
+        AddTaskDialog(
+            onDismiss = {
+                showAddTaskDialog = false
+            },
+            onConfirm = { title ->
+                taskViewModel.addTask(title)
+                showAddTaskDialog = false
+            }
+        )
     }
 }
