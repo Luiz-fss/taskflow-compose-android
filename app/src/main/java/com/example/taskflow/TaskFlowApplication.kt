@@ -1,19 +1,16 @@
 package com.example.taskflow
 
 import android.app.Application
-import com.example.taskflow.di.AppContainer
+import dagger.hilt.android.HiltAndroidApp
 
-
-class TaskFlowApplication : Application() {
-
-    // Guarda nossas dependências enquanto o app estiver aberto
-    lateinit var appContainer: AppContainer
-
-
-    override fun onCreate() {
-        super.onCreate()
-
-        // Inicializa o container uma única vez
-        appContainer = AppContainer(this)
-    }
-}
+/**
+ * Classe Application da aplicação.
+ *
+ * Ela é criada apenas uma vez,
+ * quando o aplicativo é iniciado.
+ *
+ * O Hilt utiliza essa classe para
+ * inicializar todo o grafo de dependências.
+ */
+@HiltAndroidApp
+class TaskFlowApplication : Application()

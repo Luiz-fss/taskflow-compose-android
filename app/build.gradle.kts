@@ -2,6 +2,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
+    // Plugin do Hilt.
+    //
+    // Ele prepara o projeto para utilizar
+    // Injeção de Dependência.
+    alias(libs.plugins.google.hilt)
 }
 
 android {
@@ -72,4 +77,13 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    // Biblioteca principal do Hilt.
+    implementation(libs.google.hilt.android)
+
+    // Gera automaticamente
+    // as classes do Hilt.
+    ksp(libs.google.hilt.compiler)
+
+    // Integra o Hilt ao Jetpack Compose.
+    implementation(libs.androidx.hilt.navigation.compose)
 }

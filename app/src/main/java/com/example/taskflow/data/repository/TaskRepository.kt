@@ -6,13 +6,37 @@ import com.example.taskflow.data.mapper.toTaskEntity
 import com.example.taskflow.model.Task
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
+/**
+ * Repository responsável por intermediar
+ * a comunicação entre a ViewModel e o DAO.
+ *
+ * O Repository não sabe criar um TaskDao.
+ *
+ * Ele apenas declara que precisa dele.
+ *
+ * O Hilt será responsável por fornecer
+ * essa dependência automaticamente.
+ */
+class TaskRepository @Inject constructor(
 
-class TaskRepository(
+    /**
+     * DAO injetado automaticamente
+     * pelo Hilt.
+     */
     private val taskDao: TaskDao
+
 ) {
 
-
+    /**
+     * Lista observável de tarefas.
+     *
+     * O DAO retorna TaskEntity.
+     *
+     * Aqui convertemos para o modelo
+     * utilizado pela aplicação.
+     */
     val tasks: Flow<List<Task>> =
         taskDao.getTasks()
             .map { tasksEntity ->
@@ -23,7 +47,9 @@ class TaskRepository(
 
             }
 
-
+    /**
+     * Adiciona uma nova tarefa.
+     */
     suspend fun addTask(task: Task) {
 
         taskDao.insertTask(
@@ -32,7 +58,9 @@ class TaskRepository(
 
     }
 
-
+    /**
+     * Atualiza uma tarefa existente.
+     */
     suspend fun updateTask(task: Task) {
 
         taskDao.updateTask(
@@ -41,7 +69,9 @@ class TaskRepository(
 
     }
 
-
+    /**
+     * Remove uma tarefa.
+     */
     suspend fun deleteTask(task: Task) {
 
         taskDao.deleteTask(
@@ -50,14 +80,20 @@ class TaskRepository(
 
     }
 
+    /**
+     * Busca uma tarefa específica pelo ID.
+     *
+     * O DAO retorna uma TaskEntity.
+     *
+     * O Repository converte para
+     * o modelo utilizado pela aplicação.
+     */
+    suspend fun getTaskById(
+        id: Int
+    ): Task? {
 
-    // Busca uma tarefa específica pelo ID
-    //
-    // O DAO retorna uma TaskEntity (modelo do banco)
-    // e aqui convertemos para Task (modelo da aplicação)
-    suspend fun getTaskById(id: Int): Task? {
-
-        return taskDao.getTaskById(id)
+        return taskDao
+            .getTaskById(id)
             ?.toTask()
 
     }
